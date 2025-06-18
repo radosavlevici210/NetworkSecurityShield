@@ -4,6 +4,10 @@ import {
   services,
   activityLogs,
   firewallRules,
+  threatDetections,
+  networkMonitoring,
+  securityPolicies,
+  systemHealth,
   type User, 
   type InsertUser,
   type SecuritySettings,
@@ -13,7 +17,15 @@ import {
   type ActivityLog,
   type InsertActivityLog,
   type FirewallRule,
-  type InsertFirewallRule
+  type InsertFirewallRule,
+  type ThreatDetection,
+  type InsertThreatDetection,
+  type NetworkMonitoring,
+  type InsertNetworkMonitoring,
+  type SecurityPolicy,
+  type InsertSecurityPolicy,
+  type SystemHealth,
+  type InsertSystemHealth
 } from "@shared/schema";
 
 export interface IStorage {
@@ -35,6 +47,21 @@ export interface IStorage {
   createFirewallRule(rule: InsertFirewallRule): Promise<FirewallRule>;
   updateFirewallRule(id: number, rule: Partial<FirewallRule>): Promise<FirewallRule>;
   deleteFirewallRule(id: number): Promise<void>;
+  
+  getThreatDetections(limit?: number, offset?: number): Promise<ThreatDetection[]>;
+  createThreatDetection(threat: InsertThreatDetection): Promise<ThreatDetection>;
+  
+  getNetworkMonitoring(limit?: number, offset?: number): Promise<NetworkMonitoring[]>;
+  createNetworkMonitoring(monitoring: InsertNetworkMonitoring): Promise<NetworkMonitoring>;
+  
+  getSecurityPolicies(): Promise<SecurityPolicy[]>;
+  createSecurityPolicy(policy: InsertSecurityPolicy): Promise<SecurityPolicy>;
+  updateSecurityPolicy(id: number, policy: Partial<SecurityPolicy>): Promise<SecurityPolicy>;
+  deleteSecurityPolicy(id: number): Promise<void>;
+  
+  getSystemHealth(): Promise<SystemHealth[]>;
+  createSystemHealth(health: InsertSystemHealth): Promise<SystemHealth>;
+  getLatestSystemHealth(): Promise<SystemHealth | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -43,6 +70,10 @@ export class MemStorage implements IStorage {
   private servicesData: Map<number, Service>;
   private activityLogsData: Map<number, ActivityLog>;
   private firewallRulesData: Map<number, FirewallRule>;
+  private threatDetectionsData: Map<number, ThreatDetection>;
+  private networkMonitoringData: Map<number, NetworkMonitoring>;
+  private securityPoliciesData: Map<number, SecurityPolicy>;
+  private systemHealthData: Map<number, SystemHealth>;
   private currentId: number;
 
   constructor() {
@@ -50,6 +81,10 @@ export class MemStorage implements IStorage {
     this.servicesData = new Map();
     this.activityLogsData = new Map();
     this.firewallRulesData = new Map();
+    this.threatDetectionsData = new Map();
+    this.networkMonitoringData = new Map();
+    this.securityPoliciesData = new Map();
+    this.systemHealthData = new Map();
     this.currentId = 1;
     
     // Initialize default security settings
